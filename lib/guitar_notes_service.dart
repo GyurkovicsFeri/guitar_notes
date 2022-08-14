@@ -2,8 +2,46 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 
+abstract class QuestionCreationStrategy {
+  Question createNextQuestion();
+}
+
+class RandomQuestionCreationStrategy implements QuestionCreationStrategy {
+  Question? _lastQuestion;
+
+  @override
+  Question createNextQuestion() {
+    final random = Random();
+    final guitarString = guitarStrings[random.nextInt(5)];
+
+    final fret = random.nextInt(12);
+    final question = Question(string: guitarString, fret: fret);
+
+    if (_lastQuestion == question) {
+      return createNextQuestion();
+    }
+
+    _lastQuestion = question;
+    return question;
+  }
+}
+
+class QuestionSolver {
+  Note answer({required Question of}) {
+    return Note.values[(Note.values.indexOf(of.string) + of.fret) % Note.values.length];
+  }
+}
+
 class GuitarNotesService extends ChangeNotifier {
-  Question _currentQuestion = Question.forStringAndFret(string: Note.E, fret: 0);
+  final QuestionCreationStrategy creation;
+  final QuestionSolver solver;
+
+  GuitarNotesService({
+    required this.creation,
+    required this.solver,
+  });
+
+  Question _currentQuestion = Question(string: Note.E, fret: 0);
 
   Question get currentQuestion => _currentQuestion;
   set currentQuestion(Question value) {
@@ -12,41 +50,33 @@ class GuitarNotesService extends ChangeNotifier {
   }
 
   Question nextQuestion() {
-    final random = Random();
-    final guitarString = guitarStrings[random.nextInt(5)];
-
-    final fret = random.nextInt(12);
-    final question = Question.forStringAndFret(string: guitarString, fret: fret);
-    currentQuestion = question;
-    return question;
+    currentQuestion = creation.createNextQuestion();
+    return currentQuestion;
   }
 
   bool isCorrect(Note answer) {
-    return currentQuestion.answer == answer;
+    final goodAnswer = solver.answer(of: currentQuestion);
+    return goodAnswer == answer;
   }
 }
 
 class Question {
   final String hint;
-  final Note answer;
+  final Note string;
+  final int fret;
 
   Question({
-    required this.hint,
-    required this.answer,
-  });
+    required this.string,
+    required this.fret,
+  }) : hint = '${string.localizedName}$fret';
 
-  factory Question.forStringAndFret({
-    required Note string,
-    required int fret,
-  }) {
-    final answer = Note.values[(Note.values.indexOf(string) + fret) % Note.values.length];
-    final question = Question(
-      hint: '${string.localizedName}$fret',
-      answer: answer,
-    );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Question && runtimeType == other.runtimeType && string == other.string && fret == other.fret;
 
-    return question;
-  }
+  @override
+  int get hashCode => string.hashCode ^ fret.hashCode;
 }
 
 const guitarStrings = [Note.E, Note.B, Note.G, Note.D, Note.A];
