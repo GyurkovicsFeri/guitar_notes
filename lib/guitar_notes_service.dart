@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -8,11 +9,20 @@ abstract class QuestionCreationStrategy {
 
 class RandomQuestionCreationStrategy implements QuestionCreationStrategy {
   Question? _lastQuestion;
+  List<Note> _strings;
+
+  RandomQuestionCreationStrategy({
+    required List<Note> strings,
+  }) : _strings = strings.distinct;
+
+  void changeStrings(List<Note> strings) {
+    _strings = strings.distinct;
+  }
 
   @override
   Question createNextQuestion() {
     final random = Random();
-    final guitarString = guitarStrings[random.nextInt(5)];
+    final guitarString = _strings[random.nextInt(_strings.length)];
 
     final fret = random.nextInt(12);
     final question = Question(string: guitarString, fret: fret);
@@ -79,8 +89,6 @@ class Question {
   int get hashCode => string.hashCode ^ fret.hashCode;
 }
 
-const guitarStrings = [Note.E, Note.B, Note.G, Note.D, Note.A];
-
 enum Note { C, cSharp, D, dSharp, E, F, fSharp, G, gSharp, A, aSharp, B }
 
 extension NoteLocalizedName on Note {
@@ -111,5 +119,64 @@ extension NoteLocalizedName on Note {
       case Note.gSharp:
         return 'G#';
     }
+  }
+}
+
+extension Distinct on List<Note> {
+  List<Note> get distinct => toSet().toList();
+}
+
+class TuningService extends ChangeNotifier {
+  List<Note> _strings;
+
+  TuningService({required List<Note> strings}) : _strings = strings;
+
+  List<Note> get strings => UnmodifiableListView(_strings);
+  set strings(List<Note> value) {
+    _strings = value;
+    notifyListeners();
+  }
+
+  static List<Note> getStandardTuning() {
+    return [
+      Note.E,
+      Note.A,
+      Note.D,
+      Note.G,
+      Note.B,
+      Note.E,
+    ];
+  }
+
+  static List<Note> stepDown(List<Note> tuning, int steps) {
+    final List<Note> result = [];
+    for (int i = 0; i < tuning.length; i++) {
+      final originalNote = tuning[i];
+      final newNote = originalNote.stepDown(steps);
+      result.add(newNote);
+    }
+    return result;
+  }
+
+  static List<Note> drop(List<Note> tuning) {
+    final List<Note> result = List.from(tuning);
+    result[0] = result[0].stepDown(2);
+    return result;
+  }
+}
+
+extension Manipulation on List<Note> {
+  List<Note> stepDown(int steps) {
+    return TuningService.stepDown(this, steps);
+  }
+
+  List<Note> drop() {
+    return TuningService.drop(this);
+  }
+}
+
+extension NoteManipulation on Note {
+  Note stepDown(int steps) {
+    return Note.values[(Note.values.indexOf(this) - steps) % Note.values.length];
   }
 }
