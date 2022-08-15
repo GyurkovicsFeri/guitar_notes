@@ -23,20 +23,17 @@ class GuitarNotesApp extends StatelessWidget {
             strings: context.read<TuningService>().strings,
           ),
           update: (context, tuningService, creationStrategy) {
-            if (creationStrategy is RandomQuestionCreationStrategy) {
-              creationStrategy.changeStrings(tuningService.strings);
-            }
-            return creationStrategy ??
-                RandomQuestionCreationStrategy(
-                  strings: tuningService.strings,
-                );
+            return RandomQuestionCreationStrategy(
+              strings: tuningService.strings,
+            );
           },
         ),
         Provider<QuestionSolver>(
           create: (context) => QuestionSolver(),
         ),
-        ChangeNotifierProvider<GuitarNotesService>(
+        ChangeNotifierProxyProvider<QuestionCreationStrategy, GuitarNotesService>(
           create: (context) => GuitarNotesService(creation: context.read(), solver: context.read()),
+          update: ((context, value, previous) => GuitarNotesService(creation: value, solver: context.read())),
         ),
       ],
       builder: (context, child) => MaterialApp(

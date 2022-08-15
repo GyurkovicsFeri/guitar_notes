@@ -45,7 +45,6 @@ class _GuitarNotesPageState extends State<GuitarNotesPage> {
                         ),
                         onPressed: () {
                           context.read<TuningService>().strings = TuningService.getStandardTuning();
-                          context.read<GuitarNotesService>().nextQuestion();
                         },
                       ),
                       TextButton(
@@ -55,7 +54,6 @@ class _GuitarNotesPageState extends State<GuitarNotesPage> {
                         ),
                         onPressed: () {
                           context.read<TuningService>().strings = TuningService.getStandardTuning().stepDown(1);
-                          context.read<GuitarNotesService>().nextQuestion();
                         },
                       ),
                       TextButton(
@@ -65,7 +63,6 @@ class _GuitarNotesPageState extends State<GuitarNotesPage> {
                         ),
                         onPressed: () {
                           context.read<TuningService>().strings = TuningService.getStandardTuning().stepDown(2);
-                          context.read<GuitarNotesService>().nextQuestion();
                         },
                       ),
                     ],

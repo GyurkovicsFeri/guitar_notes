@@ -49,7 +49,9 @@ class GuitarNotesService extends ChangeNotifier {
   GuitarNotesService({
     required this.creation,
     required this.solver,
-  });
+  }) {
+    _currentQuestion = creation.createNextQuestion();
+  }
 
   Question _currentQuestion = Question(string: Note.E, fret: 0);
 
