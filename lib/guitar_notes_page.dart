@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'guitar_notes_service.dart';
+import 'note.dart';
+import 'tuning_service.dart';
 
 class GuitarNotesPage extends StatefulWidget {
   const GuitarNotesPage({Key? key}) : super(key: key);

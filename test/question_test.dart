@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:guitar_notes/guitar_notes_service.dart';
+import 'package:guitar_notes/note.dart';
+import 'package:guitar_notes/question.dart';
 
 void main() {
   group("Question", () {

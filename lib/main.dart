@@ -3,6 +3,9 @@ import 'package:provider/provider.dart';
 
 import 'guitar_notes_page.dart';
 import 'guitar_notes_service.dart';
+import 'question_creation_strategy.dart';
+import 'question_solver.dart';
+import 'tuning_service.dart';
 
 void main() {
   runApp(const GuitarNotesApp());
