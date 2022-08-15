@@ -40,12 +40,3 @@ extension Distinct on List<Note> {
   List<Note> get distinct => toSet().toList();
 }
 
-extension Manipulation on List<Note> {
-  List<Note> stepDown(int steps) {
-    return TuningService.stepDown(this, steps);
-  }
-
-  List<Note> drop() {
-    return TuningService.drop(this);
-  }
-}

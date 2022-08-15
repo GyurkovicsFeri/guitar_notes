@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'guitar_notes_service.dart';
 import 'note.dart';
+import 'tuning.dart';
 import 'tuning_service.dart';
 
 class GuitarNotesPage extends StatefulWidget {
@@ -40,32 +41,49 @@ class _GuitarNotesPageState extends State<GuitarNotesPage> {
                     alignment: WrapAlignment.center,
                     spacing: 16,
                     children: <Widget>[
-                      TextButton(
-                        child: Text(
-                          "Standard",
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        onPressed: () {
-                          context.read<TuningService>().strings = TuningService.getStandardTuning();
+                      ToggleButtons(
+                        borderRadius: BorderRadius.circular(16),
+                        onPressed: (int index) {
+                          setState(() {
+                            if (index == 0) {
+                              context.read<TuningService>().tuning = Tunings.standard;
+                            }
+                            if (index == 1) {
+                              context.read<TuningService>().tuning = Tunings.halfStepDown;
+                            }
+                            if (index == 2) {
+                              context.read<TuningService>().tuning = Tunings.wholeStepDown;
+                            }
+                          });
                         },
-                      ),
-                      TextButton(
-                        child: Text(
-                          "1 step down",
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        onPressed: () {
-                          context.read<TuningService>().strings = TuningService.getStandardTuning().stepDown(1);
-                        },
-                      ),
-                      TextButton(
-                        child: Text(
-                          "2 step down",
-                          style: Theme.of(context).textTheme.headline4,
-                        ),
-                        onPressed: () {
-                          context.read<TuningService>().strings = TuningService.getStandardTuning().stepDown(2);
-                        },
+                        isSelected: [
+                          context.read<TuningService>().tuning == Tunings.standard,
+                          context.read<TuningService>().tuning == Tunings.halfStepDown,
+                          context.read<TuningService>().tuning == Tunings.wholeStepDown,
+                        ],
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Standard",
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Half step down",
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Whole step down",
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),
@@ -97,16 +115,9 @@ class _GuitarNotesPageState extends State<GuitarNotesPage> {
 
   _onNotePressed(Note note) {
     final service = context.read<GuitarNotesService>();
-    if (service.isCorrect(note)) {
-      setState(() {
-        isCorrect = true;
-      });
-    } else {
-      setState(() {
-        isCorrect = false;
-      });
-    }
-
+    setState(() {
+      isCorrect = service.isCorrect(note);
+    });
     service.nextQuestion();
   }
 }

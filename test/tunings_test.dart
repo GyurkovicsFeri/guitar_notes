@@ -1,34 +1,53 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:guitar_notes/guitar_notes_service.dart';
 import 'package:guitar_notes/note.dart';
-import 'package:guitar_notes/tuning_service.dart';
+import 'package:guitar_notes/tuning.dart';
 
 void main() {
   group("Tunings", () {
-    test('create Drop D', () {
+    test('standard', () {
       expect(
-          TuningService.getStandardTuning().drop(),
-          equals([
-            Note.D,
-            Note.A,
-            Note.D,
-            Note.G,
-            Note.B,
-            Note.E,
-          ]));
+        Tunings.standard,
+        equals(
+          const Tuning(
+            strings: [
+              Note.E,
+              Note.A,
+              Note.D,
+              Note.G,
+              Note.B,
+              Note.E,
+            ],
+          ),
+        ),
+      );
     });
 
-    test('create Drop C', () {
+    test('halfStepDown', () {
       expect(
-          TuningService.getStandardTuning().stepDown(2).drop(),
-          equals([
-            Note.C,
-            Note.G,
-            Note.C,
-            Note.F,
-            Note.A,
-            Note.D,
-          ]));
+        Tunings.halfStepDown,
+        equals(const Tuning(strings: [
+          Note.dSharp,
+          Note.gSharp,
+          Note.cSharp,
+          Note.fSharp,
+          Note.aSharp,
+          Note.dSharp,
+        ])),
+      );
+    });
+
+    test('wholeStepDown', () {
+      expect(
+        Tunings.wholeStepDown,
+        equals(const Tuning(strings: [
+          Note.D,
+          Note.G,
+          Note.C,
+          Note.F,
+          Note.A,
+          Note.D,
+        ])),
+      );
     });
   });
 }

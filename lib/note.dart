@@ -32,8 +32,8 @@ extension NoteLocalizedName on Note {
 }
 
 extension NoteManipulation on Note {
-  Note stepDown(int steps) {
-    return Note.values[(Note.values.indexOf(this) - steps) % Note.values.length];
+  Note decrement({required int by}) {
+    return Note.values[(Note.values.indexOf(this) - by) % Note.values.length];
   }
 }
 
